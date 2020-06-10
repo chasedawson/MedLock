@@ -2,6 +2,7 @@ const express = require('express');
 const patient = require('./api/patient/patient'); 
 const pdisurvey = require('./api/patient/surveys/pdisurvey'); 
 const intake = require('./api/patient/surveys/intake'); 
+const exitsurvey = require('./api/patient/surveys/exitsurvey'); 
 const dispense = require('./api/patient/dispense'); 
 const chatAuth = require('./api/chatAuth'); 
 const email = require('./api/email'); 
@@ -13,10 +14,12 @@ const patientRegister = require('./api/patient/register');
 const clinic = require('./api/clinic/clinic');
 const clinicRegister = require('./api/clinic/register');
 const providerRegister = require('./api/provider/register');
+const patientDocuments = require('./api/patient/documents');
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
 const path = require('path');
 const config_servers = require('../config/servers');
+const userLogin = require('./api/user/login');
 
 const MEDLOCK_AUDIENCE = config_servers.MEDLOCK_AUDIENCE;
 
@@ -45,7 +48,9 @@ const checkJwt = jwt({
 // Define Patient Scope 
 router.use('/api/survey/pdisurvey', checkJwt, pdisurvey); 
 router.use('/api/survey/intake', checkJwt, intake); 
+router.use('/api/survey/exitsurvey', checkJwt, exitsurvey); 
 router.use('/api/patient/patient', checkJwt, patient); 
+router.use('/api/patient/document', checkJwt, patientDocuments); // add checkJwt
 router.use('/api/dispense', dispense); 
 
 // Define Provider Scope 
@@ -66,6 +71,8 @@ router.use('/api/patient/register', patientRegister);
 router.use('/api/provider/register', providerRegister);
 router.use('/api/clinic', clinic);
 router.use('/api/clinic/register', clinicRegister);
+
+router.use('/api/user/login', checkJwt, userLogin);
 
 // If no API routes are hit, send the React app
 router.use(function(req, res) {

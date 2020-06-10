@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as d3 from "d3";
-import ReactGA from 'react-ga'; 
+import ReactGA from 'react-ga';
+import '../../App.css';
 
 export default class PDISurveyBar extends Component {
 
@@ -77,7 +78,7 @@ export default class PDISurveyBar extends Component {
         ReactGA.event({
             category: 'Data Chart Interaction', 
             action: 'Updated PDI Survey Chart Data to Chosen Date', //specify date user changed to
-            label: 'Change Time Interval for PDI Survey Bar Chart'
+            label: 'Change Time Interval for PDI Survey Bar Chart to ' + e.target.value
         }); 
         this.setState({
             surveyIndex: e.target.value,
@@ -158,7 +159,9 @@ export default class PDISurveyBar extends Component {
             .attr('transform', 'rotate(-90)')
             .attr('text-anchor', 'middle')
             .text('Pain Disability Index')
-        
+            .style('font-weight', '600')
+            .style('fill', 'var(--medlock-dark-gray)')
+            .style('stroke-width', '0')        
 
         // x-axis label
         svg.append('text')
@@ -166,6 +169,8 @@ export default class PDISurveyBar extends Component {
             .attr('y', canvasHeight + margin * 1.7)
             .attr('text-anchor', 'middle')
             .text('Categories')
+            .style('font-weight', '600')
+            .style('fill', 'var(--medlock-dark-gray)')
 
         // title
         svg.append('text')
@@ -174,6 +179,9 @@ export default class PDISurveyBar extends Component {
             .attr('y', 40)
             .attr('text-anchor', 'middle')
             .text(`PDI Survey Response for ${this.formatTimestamp(this.props.data[this.state.surveyIndex].date)}`)
+            .style('font-family', 'Montserrat')
+            .style('font-weight', 'bold')
+            .style('fill', 'var(--medlock-dark-gray)')
 
         const config = {
             xScale,

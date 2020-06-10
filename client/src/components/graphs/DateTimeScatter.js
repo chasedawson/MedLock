@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import * as d3 from "d3";
+import '../../App.css';
+import ReactGA from 'react-ga';
 
 export default class DateTimeScatter extends Component {
-    
+
     constructor(props) {
         super(props);
+        console.log(this.props.data);
 
         var formattedData = this.reformatData(this.props.data);
         var dateRange = this.getDateRange(formattedData);
@@ -24,6 +27,7 @@ export default class DateTimeScatter extends Component {
                 btn1: false,
                 btn2: false,
                 btn3: false,
+                collarOff: false,
             },
             selectedDates: dateRange,
             selectedData: formattedData,
@@ -34,7 +38,7 @@ export default class DateTimeScatter extends Component {
             expandedPointRadius: 10,
         }
     }
-    
+
     componentDidMount() {
         console.log("componentDidMount() called");
 
@@ -150,11 +154,11 @@ export default class DateTimeScatter extends Component {
         var newData = data.map((set, i) => {
             return set.map(timestamp => {
                 const date = new Date(timestamp);
-                const x = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`       
+                const x = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
                 const hours = date.getHours();
                 const min = date.getMinutes();
                 const sec = date.getSeconds();
-                const y = hours*3600 + min*60 + sec;
+                const y = hours * 3600 + min * 60 + sec;
                 return [timestamp, x, y]
             });
         });
@@ -182,8 +186,8 @@ export default class DateTimeScatter extends Component {
             .style("padding", "2px")
             .style("margin", "0px")
             .transition()
-                .duration(300)
-                .style("opacity", 0.7)
+            .duration(300)
+            .style("opacity", 0.7)
     }
 
     tooltipMouseout = (d, tooltip) => {
@@ -194,7 +198,7 @@ export default class DateTimeScatter extends Component {
     }
 
     formatDate = (date) => {
-        return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;     
+        return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     }
 
     formatTime = (d) => {
@@ -207,8 +211,8 @@ export default class DateTimeScatter extends Component {
         console.log("drawChart() called");
         var data = this.getSelectedData();
         const margin = 60;
-        const canvasHeight = this.state.height - 2*margin;
-        const canvasWidth = this.state.width - 2*margin;
+        const canvasHeight = this.state.height - 2 * margin;
+        const canvasWidth = this.state.width - 2 * margin;
 
         const canvas = d3.select(this.refs.canvas);
         const svg = canvas.append("svg")
@@ -228,11 +232,11 @@ export default class DateTimeScatter extends Component {
             .ticks(8)
             .tickSize(-canvasWidth, 0, 0)
             .tickValues([0, 10800, 21600, 32400, 43200, 54000, 64800, 75600, 86400])
-            .tickFormat((d, i) => this.formatTime(d));
+            .tickFormat((d, i) => this.formatTime(d))
 
         var dates = data.map(d => d[1]).sort();
         this.getDateRange(dates);
-        var selectedDates = this.state.dateRange.slice(this.state.startDate, this.state.endDate+1);
+        var selectedDates = this.state.dateRange.slice(this.state.startDate, this.state.endDate + 1);
         var xDomain = selectedDates.map(date => this.formatTimestamp(date));
         const xScale = d3.scaleBand()
             .range([0, canvasWidth])
@@ -243,10 +247,14 @@ export default class DateTimeScatter extends Component {
             .attr('transform', `translate(0, ${canvasHeight})`)
             .call(d3.axisBottom(xScale));
 
-         // create grid lines
-         chart.append('g')
+        // create grid lines
+        chart.append('g')
             .attr('class', 'grid')
-            .call(yAxis);
+            .call(yAxis)
+
+        console.log(chart.select("line"));
+
+
 
         // y-axis label        
         svg.append('text')
@@ -255,13 +263,18 @@ export default class DateTimeScatter extends Component {
             .attr('transform', 'rotate(-90)')
             .attr('text-anchor', 'middle')
             .text('Time')
-        
+            .style('font-weight', '600')
+            .style('fill', 'var(--medlock-dark-gray)')
+            .style('stroke-width', '0')
+
         // x-axis label
         svg.append('text')
             .attr('x', canvasWidth / 2 + margin)
             .attr('y', canvasHeight + margin * 1.7)
             .attr('text-anchor', 'middle')
             .text('Date')
+            .style('font-weight', '600')
+            .style('fill', 'var(--medlock-dark-gray)')
 
         // title
         svg.append('text')
@@ -270,7 +283,10 @@ export default class DateTimeScatter extends Component {
             .attr('y', 40)
             .attr('text-anchor', 'middle')
             .text(this.props.title)
-            
+            .style('font-family', 'Montserrat')
+            .style('font-weight', 'bold')
+            .style('fill', 'var(--medlock-dark-gray)')
+
         var tooltip = d3.select(this.refs.canvas).append("div")
             .attr("class", "tooltip")
             .style("opacity", "0")
@@ -284,7 +300,7 @@ export default class DateTimeScatter extends Component {
         chart.selectAll()
             .data(data).enter()
             .append("circle")
-            .attr('cx', (d, i) => xScale(d[1]) + xScale.bandwidth()/2)
+            .attr('cx', (d, i) => xScale(d[1]) + xScale.bandwidth() / 2)
             .attr('cy', (d, i) => yScale(d[2]))
             .attr('r', this.global.pointRadius)
             .attr('id', (d, i) => `p${i}`)
@@ -297,11 +313,11 @@ export default class DateTimeScatter extends Component {
                     }
                 })
             });
-        
+
         const config = { xScale, yScale, tooltip };
 
-        this.setState({ 
-            svg, 
+        this.setState({
+            svg,
             chart,
             config,
         });
@@ -310,7 +326,7 @@ export default class DateTimeScatter extends Component {
     redrawChart = () => {
         console.log("redrawChart() called");
         var size = this.getSize();
-        this.setState({width: size.width, height: size.height});
+        this.setState({ width: size.width, height: size.height });
         d3.select(`#${this.props.id}`).remove();
         this.drawChart();
     }
@@ -322,7 +338,7 @@ export default class DateTimeScatter extends Component {
          * since componentDidUpdate can be called before drawChart is called,
          * make sure that chart is defined before proceeding
          */
-         if (chart) { 
+        if (chart) {
             const { xScale, yScale } = config;
 
             var getSign = () => {
@@ -356,24 +372,24 @@ export default class DateTimeScatter extends Component {
                         .attr('cx', (d, i) => xScale(d[1]) + xScale.bandwidth()/2)
                         .attr('cy', (d, i) => yScale(d[2]))
                     // .attr("r", this.global.expandedPointRadius);
-                
-                // show tooltip
-                this.tooltipMouseover(d[2], config.tooltip);
-            })
-            .on("mouseout", (d, i) => {
-                // decrease the size of the point
-                // chart.select(`#p${i}`)
-                //     .transition()
-                //     .duration(1000)
-                //     .attr('cx', (d, i) => xScale(d[1]) + xScale.bandwidth()/2)
-                //     .attr('cy', (d, i) => yScale(d[2]))
-                
-                // hide tooltip
-                this.tooltipMouseout(d[1], config.tooltip);
-            });
+
+                    // show tooltip
+                    this.tooltipMouseover(d[2], config.tooltip);
+                })
+                .on("mouseout", (d, i) => {
+                    // decrease the size of the point
+                    // chart.select(`#p${i}`)
+                    //     .transition()
+                    //     .duration(1000)
+                    //     .attr('cx', (d, i) => xScale(d[1]) + xScale.bandwidth()/2)
+                    //     .attr('cy', (d, i) => yScale(d[2]))
+
+                    // hide tooltip
+                    this.tooltipMouseout(d[1], config.tooltip);
+                });
         }
     }
-    
+
     componentDidUpdate() {
         console.log("componentDidUpate() called");
         this.updateChart();
@@ -390,7 +406,7 @@ export default class DateTimeScatter extends Component {
                         <div>End Date: {this.endDateSelect(this.state.dateRange)}</div>
                     </div>
                 </div>
-            </div> 
+            </div>
         )
     }
 
@@ -400,6 +416,11 @@ export default class DateTimeScatter extends Component {
     }
 
     onStartDateSelectChange = (e) => {
+        ReactGA.event({
+            category: 'Graph Date Selector',
+            action: 'Chose New Graph Start Date',
+            label: 'Changed Graph Start Date to ' + Number(e.target.value)
+        })
         this.setState({
             startDate: Number(e.target.value),
         }, () => {
@@ -408,6 +429,11 @@ export default class DateTimeScatter extends Component {
     }
 
     onEndDateSelectChange = (e) => {
+        ReactGA.event({
+            category: 'Graph Date Selector',
+            action: 'Chose New Graph End Date',
+            label: 'Changed Graph End Date to ' + Number(e.target.value)
+        })
         this.setState({
             endDate: Number(e.target.value),
         }, () => {
@@ -437,7 +463,7 @@ export default class DateTimeScatter extends Component {
                             name="btn1"
                             value={this.state.selectedEvents.btn1} 
                             onChange={this.onDataSelectorChange} />
-                        Button 1
+                        {this.props.buttonMeaning[0]}
                     </label>
                     <div className="circle-legend btn1"></div>
                 </div>
@@ -448,7 +474,7 @@ export default class DateTimeScatter extends Component {
                             name="btn2" 
                             value={this.state.selectedEvents.btn2}
                             onChange={this.onDataSelectorChange} />
-                        Button 2
+                        {this.props.buttonMeaning[1]}
                     </label>
                     <div className="circle-legend btn2"></div>
                 </div>
@@ -459,9 +485,20 @@ export default class DateTimeScatter extends Component {
                             name="btn3" 
                             value={this.state.selectedEvents.btn3} 
                             onChange={this.onDataSelectorChange} />
-                        Button 3
+                        {this.props.buttonMeaning[2]}
                     </label>
                     <div className="circle-legend btn3"></div>
+                </div>
+                <div class="group">
+                    <label>
+                        <input 
+                            type="checkbox" 
+                            name="collarOff"
+                            value={this.state.selectedEvents.collarOff} 
+                            onChange={this.onDataSelectorChange} />
+                        Collar Off
+                    </label>
+                    <div className="circle-legend collarOff"></div>
                 </div>
             </form>
         )
@@ -472,6 +509,11 @@ export default class DateTimeScatter extends Component {
         console.log("onDataSelectorChange() called");
         var val = this.strToBool(e.target.value);
         var new_val = !val;
+        ReactGA.event({
+            category: 'Data Selector Checkbox',
+            action: 'Toggled ' + this.name + ' graph view',
+            label: 'Changed value of ' + this.name + ' to ' + new_val
+        })
         this.setState({
             selectedEvents: {
                 ...this.state.selectedEvents,
@@ -511,21 +553,25 @@ export default class DateTimeScatter extends Component {
     getDataSelections = () => {
         var selections = [];
         const { selectedEvents } = this.state;
-        
-        if (selectedEvents.dispenses) { 
+
+        if (selectedEvents.dispenses) {
             selections.push(0);
-        } 
+        }
 
         if (selectedEvents.btn1) {
             selections.push(1);
         }
 
         if (selectedEvents.btn2) {
-            selections.push(2)
+            selections.push(2);
         }
 
         if (selectedEvents.btn3) {
-            selections.push(3)
+            selections.push(3);
+        }
+
+        if (selectedEvents.collarOff) {
+            selections.push(4);
         }
 
         return selections;

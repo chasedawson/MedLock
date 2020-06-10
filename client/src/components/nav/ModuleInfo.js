@@ -1,10 +1,12 @@
-// Include Profiles Section 
-// import InboxIcon from '../../icons/round-email-24px.svg';
+// location of svg files for module icons
+// icons taken from: https://material.io/resources/icons/?style=baseline
 import MyDataIcon from '../../icons/round-timeline-24px.svg';
 import ResourcesIcon from '../../icons/round-folder-24px.svg';
 import DashboardIcon from '../../icons/round-home-24px.svg';
 import ProfileIcon from '../../icons/round-person-24px.svg';
 import MyPatientsIcon from '../../icons/round-people-24px.svg';
+import DocumentsIcon from '../../icons/round-description-24px.svg';
+import MySurveysIcon from '../../icons/poll-white-18dp.svg';
 
 export const modules = [
     {
@@ -108,23 +110,24 @@ export const modules = [
             }
         ], 
         content:  {
-            icon: MyDataIcon,
+            icon: MySurveysIcon,
         },
         link: '/dashboard/survey'
     },
-    // {
-    //     name: 'Dispenser',
-    //     id: 'dispenser',
-    //     roles: [
-    //         {
-    //             name: 'Patient', 
-    //             description: 'Simulate dispenses'
-    //         }
-    //     ], 
-    //     content:  {
-    //         icon: MyDataIcon,
-    //     },
-    //     link: '/dashboard/dispenser'
-    // }
+    {
+        name: 'Documents',
+        id: 'documents',
+        roles: [
+            {
+                name: 'Patient',
+                description: 'Upload, store, and access your MedLock documents.'
+            }
+        ],
+        content: {
+            icon: DocumentsIcon
+        },
+        link: '/dashboard/documents'
+    }
+
 
 ]
