@@ -4,8 +4,8 @@
 MedLock is a precription monitoring service that bridges gaps in patient care using Mobile Health technologies so that HealthCare Providers may prevent, identify, and intervene in real time for potential opioid addiction. 
 
 # Demos
-Software Demo Video: https://drive.google.com/file/d/14luo3cWSAnxWdvUtp8tcyUSzZA95P5UO/view?usp=sharing
-Pill Dispenser Demo Slides: https://drive.google.com/file/d/1D18dmrX0GE0BrLuMPaVDD37jqcFEAnqI/view?usp=sharing
+* Software Demo Video: https://drive.google.com/file/d/14luo3cWSAnxWdvUtp8tcyUSzZA95P5UO/view?usp=sharing
+* Pill Dispenser Demo Slides: https://drive.google.com/file/d/1D18dmrX0GE0BrLuMPaVDD37jqcFEAnqI/view?usp=sharing
 
 # File Structure 
 
